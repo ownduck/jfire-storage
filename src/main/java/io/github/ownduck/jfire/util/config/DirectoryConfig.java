@@ -1,7 +1,7 @@
-package jfire.util.config;
+package io.github.ownduck.jfire.util.config;
 
-import jfire.util.model.LocalPathInfo;
-import jfire.util.util.TimeUtil;
+import io.github.ownduck.jfire.util.model.LocalPathInfo;
+import io.github.ownduck.jfire.util.util.TimeUtil;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,7 +20,7 @@ public class DirectoryConfig extends Config {
         useDateSubDirectory(useDateSubDirectory);
     }
 
-    public LocalPathInfo makeSavePath(String originalFilename,byte[] data){
+    public LocalPathInfo makeSavePath(String originalFilename, byte[] data){
         Path rootPath = rootDirectory;
         String parentDirectory = "";
         if (useDateSubDirectory){

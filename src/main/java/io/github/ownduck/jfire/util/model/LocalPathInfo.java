@@ -1,4 +1,4 @@
-package jfire.util.model;
+package io.github.ownduck.jfire.util.model;
 
 import lombok.Data;
 

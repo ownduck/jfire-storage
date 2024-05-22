@@ -1,4 +1,4 @@
-package jfire.util;
+package io.github.ownduck.jfire.util;
 
 import junit.framework.TestCase;
 

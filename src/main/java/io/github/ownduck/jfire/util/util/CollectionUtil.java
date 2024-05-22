@@ -1,4 +1,4 @@
-package jfire.util.util;
+package io.github.ownduck.jfire.util.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

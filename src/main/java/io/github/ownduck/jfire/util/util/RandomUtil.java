@@ -1,4 +1,4 @@
-package jfire.util.util;
+package io.github.ownduck.jfire.util.util;
 
 import java.util.Random;
 import java.util.UUID;

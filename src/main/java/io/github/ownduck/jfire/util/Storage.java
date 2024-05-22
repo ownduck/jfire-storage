@@ -1,9 +1,9 @@
-package jfire.util;
+package io.github.ownduck.jfire.util;
 
-import jfire.util.config.DirectoryConfig;
-import jfire.util.model.StorageResult;
-import jfire.util.storage.LocalStorage;
-import jfire.util.util.FileUtil;
+import io.github.ownduck.jfire.util.storage.LocalStorage;
+import io.github.ownduck.jfire.util.config.DirectoryConfig;
+import io.github.ownduck.jfire.util.model.StorageResult;
+import io.github.ownduck.jfire.util.util.FileUtil;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;

@@ -1,9 +1,9 @@
-package jfire.util.storage;
+package io.github.ownduck.jfire.util.storage;
 
-import jfire.util.Storage;
-import jfire.util.config.DirectoryConfig;
-import jfire.util.model.LocalPathInfo;
-import jfire.util.model.StorageResult;
+import io.github.ownduck.jfire.util.model.LocalPathInfo;
+import io.github.ownduck.jfire.util.Storage;
+import io.github.ownduck.jfire.util.config.DirectoryConfig;
+import io.github.ownduck.jfire.util.model.StorageResult;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

@@ -1,7 +1,7 @@
-package jfire.util;
+package io.github.ownduck.jfire.util;
 
-import jfire.util.config.DirectoryConfig;
-import jfire.util.model.StorageResult;
+import io.github.ownduck.jfire.util.config.DirectoryConfig;
+import io.github.ownduck.jfire.util.model.StorageResult;
 
 /**
  * Unit test for simple App.

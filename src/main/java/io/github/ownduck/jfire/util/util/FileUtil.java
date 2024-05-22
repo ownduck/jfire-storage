@@ -1,4 +1,4 @@
-package jfire.util.util;
+package io.github.ownduck.jfire.util.util;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
