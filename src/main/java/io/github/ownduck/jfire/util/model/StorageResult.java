@@ -18,4 +18,8 @@ public class StorageResult {
     private String savedPath;
 
     private String message;
+
+    private String contentType;
+
+    private Long contentLength;
 }
