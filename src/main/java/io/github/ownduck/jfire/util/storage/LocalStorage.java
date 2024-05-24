@@ -1,19 +1,20 @@
 package io.github.ownduck.jfire.util.storage;
 
-import io.github.ownduck.jfire.util.model.LocalPathInfo;
 import io.github.ownduck.jfire.util.Storage;
 import io.github.ownduck.jfire.util.config.DirectoryConfig;
 import io.github.ownduck.jfire.util.model.StorageResult;
+import io.github.ownduck.jfire.util.util.FileUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.util.function.BiFunction;
 
 public class LocalStorage extends Storage {
 
@@ -25,87 +26,60 @@ public class LocalStorage extends Storage {
         this.config = config;
     }
 
-    private StorageResult successResult(String savedPath,Long spendTime){
-        return StorageResult.builder()
-                .ok(true)
-                .savedPath(savedPath)
-                .spendTime(spendTime)
-                .message("ok")
-                .build();
-    }
-
-    private StorageResult errorResult(String message){
-        return StorageResult.builder()
-                .ok(false)
-                .message(message)
-                .build();
-    }
-
-    @Override
-    public StorageResult upload(MultipartFile file) {
-        try(
-            InputStream is = file.getInputStream();
-        ){
-            return upload(is,file.getOriginalFilename());
-        }catch (Exception e){
-            log.error("upload error {}",e.getMessage());
-            return errorResult(e.getMessage());
-        }
-    }
-
-    @Override
-    public StorageResult upload(String filePath) {
-        try{
-            if (StringUtils.isBlank(filePath)){
-                throw new IOException("文件路径为空");
-            }
-            return upload(new File(filePath));
-        }catch (Exception e){
-            log.error("upload error {}",e.getMessage());
-            return errorResult(e.getMessage());
-        }
-    }
-
-    @Override
-    public StorageResult upload(File file) {
-        try(
-            FileInputStream fis = new FileInputStream(file);
-        ){
-            return upload(fis, file.getName());
-        }catch (Exception e){
-            log.error("upload error {}",e.getMessage());
-            return errorResult(e.getMessage());
-        }
-    }
-
-    @Override
-    public StorageResult upload(InputStream inputStream) {
-        return upload(inputStream,null);
-    }
-
     @Override
     public StorageResult upload(InputStream inputStream,String fileName) {
         try{
-            Long startTime = System.currentTimeMillis();
+            long startTime = System.currentTimeMillis();
             byte[] data = inputStream.readAllBytes();
             if (data.length == 0){
                 throw new IOException("上传内容为空");
             }
 
-            LocalPathInfo pathInfo = config.makeSavePath(fileName,data);
-            forceMakeDirectory(pathInfo.getParentAbsolutePath());
-            File saveFile = pathInfo.getSaveAbsolutePath().toFile();
-            FileUtils.writeByteArrayToFile(saveFile,data);
-            if (!saveFile.exists() || saveFile.length() == 0){
+            BiFunction<String,byte[],String> saver = config.getHandler((path)->{
+                try {
+                    forceMakeDirectory(path.getParent());
+                    File saveFile = path.toFile();
+                    FileUtils.writeByteArrayToFile(saveFile,data);
+                    return saveFile.exists() && saveFile.length() > 0;
+                } catch (IOException e) {
+                    return false;
+                }
+            });
+            String savedPath = saver.apply(fileName,data);
+            if (StringUtils.isBlank(savedPath)){
                 throw new IOException("保存失败");
             }
-//            System.out.println("saved to absolute path "+saveFile);
+//            System.out.println("saved to path "+savedPath);
 
-            Long spendTime = System.currentTimeMillis() - startTime;
-            return successResult(pathInfo.getSavePath(),spendTime);
+            long spendTime = System.currentTimeMillis() - startTime;
+            return successResult(savedPath,spendTime);
         }catch (Exception e){
             log.error("upload error {}",e.getMessage());
             return errorResult(e.getMessage());
+        }
+    }
+
+    private void forceMakeDirectory(Path path) throws IOException {
+        String absolutePath = path.toAbsolutePath().toString();
+        if (!FileUtil.mkdir(absolutePath)){
+            throw new IOException("创建目录失败");
+        }
+        if (!FileUtil.setWritable(absolutePath)){
+            throw new IOException("目录不可写");
+        }
+    }
+
+    @Override
+    public InputStream get(String key) {
+        try {
+            File file = config.resolve(key);
+            if (file == null){
+                return null;
+            }
+            return new FileInputStream(file);
+        } catch (Exception e) {
+            log.error("{} get error {}",LocalStorage.class.getSimpleName(),e.getMessage());
+            return null;
         }
     }
 }

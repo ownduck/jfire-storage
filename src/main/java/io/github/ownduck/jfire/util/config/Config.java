@@ -1,7 +1,7 @@
 package io.github.ownduck.jfire.util.config;
 
-import io.github.ownduck.jfire.util.util.RandomUtil;
 import io.github.ownduck.jfire.util.util.FileUtil;
+import io.github.ownduck.jfire.util.util.RandomUtil;
 import org.apache.commons.lang3.StringUtils;
 
 public abstract class Config {

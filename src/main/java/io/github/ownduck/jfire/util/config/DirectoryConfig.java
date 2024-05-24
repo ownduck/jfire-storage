@@ -1,11 +1,14 @@
 package io.github.ownduck.jfire.util.config;
 
-import io.github.ownduck.jfire.util.model.LocalPathInfo;
 import io.github.ownduck.jfire.util.util.TimeUtil;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class DirectoryConfig extends Config {
 
@@ -20,23 +23,29 @@ public class DirectoryConfig extends Config {
         useDateSubDirectory(useDateSubDirectory);
     }
 
-    public LocalPathInfo makeSavePath(String originalFilename, byte[] data){
-        Path rootPath = rootDirectory;
-        String parentDirectory = "";
-        if (useDateSubDirectory){
-            parentDirectory += TimeUtil.toString(new Date(),dateSubDirectoryFormat)+"/";
-        }
-        Path parentAbsolutePath = rootPath.resolve(parentDirectory);
-        String saveKey = makeSaveName(originalFilename,data);
-        Path saveAbsolutePath = parentAbsolutePath.resolve(saveKey);
+    public BiFunction<String,byte[],String> getHandler(Function<Path,Boolean> saver){
+        return (originalFilename,data)->{
+            String parentDirectory = "";
+            if (useDateSubDirectory){
+                parentDirectory += TimeUtil.toString(new Date(),dateSubDirectoryFormat)+"/";
+            }
+            Path rootPath = rootDirectory;
+            Path parentAbsolutePath = rootPath.resolve(parentDirectory);
+            String saveKey = makeSaveName(originalFilename,data);
+            Path saveAbsolutePath = parentAbsolutePath.resolve(saveKey);
+            Boolean saved = saver.apply(saveAbsolutePath);
+            return saved ? "/" + parentDirectory + saveKey : null;
+        };
+    }
 
-        LocalPathInfo pathInfo = new LocalPathInfo();
-        pathInfo.setRootPath(rootPath);
-        pathInfo.setParentDirectory(parentDirectory);
-        pathInfo.setParentAbsolutePath(parentAbsolutePath);
-        pathInfo.setSaveKey(saveKey);
-        pathInfo.setSavePath("/"+parentDirectory+saveKey);
-        pathInfo.setSaveAbsolutePath(saveAbsolutePath);
-        return pathInfo;
+    public File resolve(String key){
+        String path = StringUtils.strip(key,"/\\");
+        Path rootPath = rootDirectory;
+        Path savedPath = rootPath.resolve(path).toAbsolutePath();
+        File file = savedPath.toFile();
+        if (!file.isFile()){
+            return null;
+        }
+        return file;
     }
 }
