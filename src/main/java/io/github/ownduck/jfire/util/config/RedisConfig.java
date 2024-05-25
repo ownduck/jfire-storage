@@ -66,12 +66,11 @@ public class RedisConfig extends Config {
     }
 
     public BiFunction<String,byte[],String> getHandler(BiFunction<RedisStringCommands<String, String>,String,Boolean> saver){
-        return (originalFilename,data)->{
+        return (saveKey,data)->{
             String parentDirectory = "";
             if (useDateSubDirectory){
                 parentDirectory += TimeUtil.toString(new Date(),dateSubDirectoryFormat)+"/";
             }
-            String saveKey = makeSaveName(originalFilename,data);
             String savePath = parentDirectory + saveKey;
             String cacheKey = getCacheKey(savePath);
             Boolean saved = saver.apply(commands,cacheKey);

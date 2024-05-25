@@ -1,6 +1,6 @@
 package io.github.ownduck.jfire.util;
 
-import io.github.ownduck.jfire.util.config.DirectoryConfig;
+import io.github.ownduck.jfire.util.config.LocalConfig;
 import io.github.ownduck.jfire.util.config.RedisConfig;
 import io.github.ownduck.jfire.util.model.StorageResult;
 import io.github.ownduck.jfire.util.storage.LocalStorage;
@@ -22,7 +22,7 @@ public abstract class Storage {
     protected Storage() {
     }
 
-    public static final Storage localStorage(DirectoryConfig config){
+    public static final Storage localStorage(LocalConfig config){
         return new LocalStorage(config);
     }
 
@@ -84,7 +84,7 @@ public abstract class Storage {
         return upload(inputStream,null);
     }
 
-    public abstract StorageResult upload(InputStream inputStream,String fileName);
+    public abstract StorageResult upload(InputStream inputStream,String originalFilename);
 
     public abstract InputStream get(String key);
 }

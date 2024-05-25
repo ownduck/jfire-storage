@@ -28,22 +28,17 @@ public abstract class Config {
         this.dateSubDirectoryFormat = dateSubDirectoryFormat;
     }
 
-    public String makeSaveName(String originalFilename,byte[] data){
+    public String makeSaveKey(String originalFilename,String contentType){
         if (useOriginalFilename && StringUtils.isNotBlank(originalFilename)){
             return originalFilename;
         }
         String extension = "";
-        if (data != null && data.length > 0){
-            String contentType = FileUtil.getMimeType(data);
+        if (StringUtils.isNotBlank(contentType)){
             extension = FileUtil.mime2ext(contentType);
             extension = StringUtils.isNotBlank(extension) ? "."+extension : "";
         }
         String filename = RandomUtil.getRandomStr(25,"ALL");
         return filename + extension;
-    }
-
-    public String makeSaveName(String originalFilename){
-        return makeSaveName(originalFilename,null);
     }
 
 }
