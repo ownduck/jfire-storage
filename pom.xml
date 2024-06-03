@@ -4,7 +4,7 @@
   <groupId>io.github.ownduck</groupId>
   <artifactId>jfire-util-storage</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.6</version>
+  <version>1.0.7</version>
   <name>jfire-util-storage</name>
   <description></description>
   <url></url>

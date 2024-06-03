@@ -45,10 +45,9 @@ public class RedisConfig extends Config {
         this.password = password;
         this.database = database != null ? database : 0;
         useDateSubDirectory(useDateSubDirectory);
-        this.init();
     }
 
-    private void init(){
+    private RedisClient getClient(){
         RedisURI uri = RedisURI.create(host,port);
         uri.setTimeout(timeout);
         uri.setDatabase(database);
@@ -56,9 +55,22 @@ public class RedisConfig extends Config {
             uri.setCredentialsProvider(new StaticCredentialsProvider(null,password.toCharArray()));
         }
         RedisClient client = RedisClient.create(uri);
-        StatefulRedisConnection<String, String> connection = client.connect();
-        RedisStringCommands<String, String> commands = connection.sync();
-        this.commands = commands;
+        return client;
+
+    }
+
+    private RedisStringCommands<String, String> getCommands(){
+        if (this.commands == null){
+            synchronized (this){
+                if (this.commands == null){
+                    RedisClient client = this.getClient();
+                    StatefulRedisConnection<String, String> connection = client.connect();
+                    RedisStringCommands<String, String> commands = connection.sync();
+                    this.commands = commands;
+                }
+            }
+        }
+        return this.commands;
     }
 
     private String getCacheKey(String saveKey) {
@@ -66,6 +78,7 @@ public class RedisConfig extends Config {
     }
 
     public BiFunction<String,byte[],String> getHandler(BiFunction<RedisStringCommands<String, String>,String,Boolean> saver){
+        RedisStringCommands<String, String> commands = getCommands();
         return (saveKey,data)->{
             String parentDirectory = "";
             if (useDateSubDirectory){
@@ -79,6 +92,7 @@ public class RedisConfig extends Config {
     }
 
     public byte[] resolve(String key){
+        RedisStringCommands<String, String> commands = getCommands();
         String path = StringUtils.strip(key,"/\\");
         String cacheKey = getCacheKey(path);
         String value = commands.get(cacheKey);
