@@ -33,7 +33,7 @@ public class LocalConfig extends Config {
             Path parentAbsolutePath = rootPath.resolve(parentDirectory);
             Path saveAbsolutePath = parentAbsolutePath.resolve(saveKey);
             Boolean saved = saver.apply(saveAbsolutePath);
-            return saved ? "/" + parentDirectory + saveKey : null;
+            return saved ? parentDirectory + saveKey : null;
         };
     }
 

@@ -87,7 +87,7 @@ public class RedisConfig extends Config {
             String savePath = parentDirectory + saveKey;
             String cacheKey = getCacheKey(savePath);
             Boolean saved = saver.apply(commands,cacheKey);
-            return saved ? "/" + savePath : null;
+            return saved ? savePath : null;
         };
     }
 
